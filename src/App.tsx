@@ -1,30 +1,50 @@
-import logo from "./assets/logo.png";
+import { useState } from "react";
 import "./App.css";
+import { Header } from "./components/Header";
+import { Form } from "./components/Form";
+import { List } from "./components/List";
 
 function App() {
+  const [projects, setProjects] = useState<Project[]>([
+    {
+      title:
+        "Estudo e Caracterização do cabelo do milho Zea Mays1 Estudo e Caracterização do cabelo do milho Zea Mays2 Estudo e Caracterização do cabelo do milho Zea Mays1 Estudo e Caracterização do cabelo do milho Zea Mays2 Estudo e Caracterização do cabelo do milho Zea Mays1 Estudo e Caracterização do cabelo do milho Zea Mays2 Estudo e Caracterização do cabelo do milho Zea Mays1 Estudo e Caracterização do cabelo do milho Zea Mays2",
+      authors: [
+        { name: "Leonardo Prietsch Oliveira" },
+        { name: "Muriel Schiling Krohn" },
+      ],
+    },
+    {
+      title: "Estudo e Caracterização do cabelo do milho Zea Mays",
+      authors: [
+        { name: "Leonardo Prietsch Oliveira" },
+        { name: "Muriel Schiling Krohn" },
+      ],
+    },
+  ]);
+
   return (
     <>
-      <header className="flex w-screen justify-center">
-        <div className="flex w-full max-w-7xl items-center justify-between p-2">
-          <img src={logo} alt="Logo da ABRIC" className="h-12" />
-          <a className="cursor-pointer">
-            <h1 className="text-2xl font-bold text-primary">Site</h1>
+      <div className="h-3 fixed bg-red-600 w-[375px]"></div>
+      <div className="h-2 fixed bg-amber-400 w-[640px]"></div>
+      <div className="h-1 fixed bg-blue-600 w-[768px]"></div>
+      <Header />
+      <main className="flex flex-col items-center mb-4 md:mb-0 md:min-h-screen md:justify-evenly lg:w-screen lg:flex-row">
+        <Form setProjects={setProjects} projects={projects} />
+        <List projects={projects} />
+      </main>
+      <footer className="hidden md:flex justify-center w-full md:fixed bottom-0 justify-self-center bg-gray-300 py-2">
+        <span className="font-semi text-primary">
+          Desenvolvido por @
+          <a
+            href="https://github.com/leoprietsch"
+            className="appearance-none underline text-darkPrimary hover:cursor-pointer"
+          >
+            leoprietsch
           </a>
-        </div>
-      </header>
-      <div className="flex w-screen min-h-[500px] justify-center items-center">
-        <form className="border-2 border-primary rounded p-5">
-          <div className="w-96 flex items-center justify-between">
-            <label className="text-primary font-bold w-2/6">
-              Título do Projeto
-            </label>
-            <input
-              className="w-3/6 bg-gray-200 appearance-none border-2 border-primary rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-              placeholder="Título do Projeto"
-            />
-          </div>
-        </form>
-      </div>
+          .
+        </span>
+      </footer>
     </>
   );
 }
