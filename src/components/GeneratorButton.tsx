@@ -108,12 +108,17 @@ export const GeneratorButton = (props: GeneratorButtonProps) => {
         });
       });
 
+      const pdfTitle = [projectTitle, studentName].join(" - ");
+      pdf.setTitle(pdfTitle);
+      pdf.setLanguage("pt-br");
+      pdf.setAuthor("Associação Brasileira de Incentivo à Ciência");
+      pdf.setCreator("Gerador de Certificados - ABRIC");
+      pdf.setProducer("Gerador de Certificados - ABRIC");
+      pdf.setKeywords(["Ciência", "Tecnologia", "Certificado", "Prêmio"]);
+      pdf.setSubject("Certificado");
+
       const pdfBytes = await pdf.save();
-      download(
-        pdfBytes,
-        `${[projectTitle, studentName].join(" - ")}.pdf`,
-        "application/pdf"
-      );
+      download(pdfBytes, `${pdfTitle}.pdf`, "application/pdf");
     });
   };
 
