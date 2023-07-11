@@ -5,30 +5,10 @@ import { Form } from "./components/Form";
 import { List } from "./components/List";
 
 function App() {
-  const [projects, setProjects] = useState<Project[]>([
-    {
-      title: "Estudo e Caracterização do cabelo do milho Zea Mays",
-      authors: [
-        {
-          name: "Leonardo Prietsch Oliveira Leonardo Prietsch Oliveira Oliveira Leonardo Prietsch Oliveira Leonardo Prietsch Oliveira Oliveira",
-        },
-        { name: "Muriel Schiling Krohn" },
-      ],
-    },
-    {
-      title: "Estudo e Caracterização do cabelo do milho Zea Mays",
-      authors: [
-        { name: "Leonardo Prietsch Oliveira" },
-        { name: "Muriel Schiling Krohn" },
-      ],
-    },
-  ]);
+  const [projects, setProjects] = useState<Project[]>([]);
 
   return (
     <>
-      <div className="h-3 fixed bg-red-600 w-[375px]"></div>
-      <div className="h-2 fixed bg-amber-400 w-[640px]"></div>
-      <div className="h-1 fixed bg-blue-600 w-[768px]"></div>
       <Header />
       <main className="flex flex-col items-center mb-4 md:mb-0 md:min-h-screen md:justify-evenly lg:w-screen lg:flex-row">
         <Form setProjects={setProjects} projects={projects} />
