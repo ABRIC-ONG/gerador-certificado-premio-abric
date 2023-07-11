@@ -127,7 +127,7 @@ export const GeneratorButton = (props: GeneratorButtonProps) => {
       className="bg-primary py-2 text-white font-bold mt-4"
       onClick={downloadCertificates}
     >
-      BAIXAR CERTIFICADO{selectedProject.authors.length > 1 && "(S)"}
+      BAIXAR CERTIFICADO{selectedProject?.authors?.length > 1 && "(S)"}
     </button>
   );
 };

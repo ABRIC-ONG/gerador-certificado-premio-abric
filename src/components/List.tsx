@@ -37,7 +37,9 @@ const List = (props: ListProps) => {
             <p className="font-semibold text-lg mb-2 lg:text-xl">
               {selectedProject?.title}
             </p>
-            <ProjectAuthors authors={selectedProject.authors} />
+            <ProjectAuthors
+              authors={selectedProject?.authors || ([] as Author[])}
+            />
             <ListPage
               projectIndex={projectIndex}
               setProjectIndex={setProjectIndex}
