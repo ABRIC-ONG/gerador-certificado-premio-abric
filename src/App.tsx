@@ -7,10 +7,11 @@ import { List } from "./components/List";
 function App() {
   const [projects, setProjects] = useState<Project[]>([
     {
-      title:
-        "Estudo e Caracterização do cabelo do milho Zea Mays1 Estudo e Caracterização do cabelo do milho Zea Mays2 Estudo e Caracterização do cabelo do milho Zea Mays1 Estudo e Caracterização do cabelo do milho Zea Mays2 Estudo e Caracterização do cabelo do milho Zea Mays1 Estudo e Caracterização do cabelo do milho Zea Mays2 Estudo e Caracterização do cabelo do milho Zea Mays1 Estudo e Caracterização do cabelo do milho Zea Mays2",
+      title: "Estudo e Caracterização do cabelo do milho Zea Mays",
       authors: [
-        { name: "Leonardo Prietsch Oliveira" },
+        {
+          name: "Leonardo Prietsch Oliveira Leonardo Prietsch Oliveira Oliveira Leonardo Prietsch Oliveira Leonardo Prietsch Oliveira Oliveira",
+        },
         { name: "Muriel Schiling Krohn" },
       ],
     },

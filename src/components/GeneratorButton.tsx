@@ -1,3 +1,4 @@
+import download from "downloadjs";
 import { PDFDocument, PDFFont, StandardFonts, rgb } from "pdf-lib";
 import certificatePath from "../assets/premio_abric_incentivo_ciencia.pdf";
 
@@ -7,19 +8,26 @@ interface GeneratorButtonProps {
 
 export const GeneratorButton = (props: GeneratorButtonProps) => {
   const { selectedProject } = props;
-  const wrapText = (
+
+  const DEFAULT_FONT_SIZE = 20;
+  const TEXT_MAX_WIDTH = 550;
+  const TITLE_MAX_HEIGHT = 85;
+  const TEXT_COLOR = rgb(0.208, 0.635, 0.271);
+
+  function wrapText(
     text: string,
-    width: number,
     font: PDFFont,
-    fontSize: number
-  ) => {
+    fontSize: number,
+    maxWidth: number,
+    maxHeight: number
+  ): string[] {
     const words = text.split(" ");
     let line = "";
     let result = "";
     for (let n = 0; n < words.length; n++) {
       const testLine = line + words[n] + " ";
       const testWidth = font.widthOfTextAtSize(testLine, fontSize);
-      if (testWidth > width) {
+      if (testWidth > maxWidth) {
         result += line + "\n";
         line = words[n] + " ";
       } else {
@@ -27,95 +35,94 @@ export const GeneratorButton = (props: GeneratorButtonProps) => {
       }
     }
     result += line;
-    return result;
-  };
 
-  const splitParagraphs = (
-    text: string,
-    width: number,
-    font: PDFFont,
-    fontSize: number
-  ) => {
-    const wrapedText = wrapText(text, width, font, fontSize);
-    const paragraphs = wrapedText.split("\n");
+    const paragraphs = result.split("\n");
 
-    paragraphs.length * font.heightAtSize(fontSize);
+    font.heightAtSize(fontSize);
 
-    return paragraphs;
-  };
+    if (paragraphs.length * font.heightAtSize(fontSize) > maxHeight)
+      return wrapText(text, font, fontSize - 1, maxWidth, maxHeight);
+    else return paragraphs;
+  }
 
-  const downloadCertificate = async () => {
+  const downloadCertificates = async () => {
     const certificateTemplate = await fetch(certificatePath).then((res) =>
       res.arrayBuffer()
     );
 
-    const pdfDoc = await PDFDocument.load(certificateTemplate);
-    const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    selectedProject.authors?.forEach(async (author) => {
+      const pdf = await PDFDocument.load(certificateTemplate);
+      const font = await pdf.embedFont(StandardFonts.HelveticaBold);
 
-    const pages = pdfDoc.getPages();
-    const firstPage = pages[0];
-    const { width } = firstPage.getSize();
+      const pdfPage = pdf.getPages()?.[0];
+      const { width: pdfWidth } = pdfPage.getSize();
 
-    const color = rgb(0.208, 0.635, 0.271);
+      const studentName = author.name;
 
-    const studentFontSize = 20;
-    const studentName = selectedProject.authors[0].name;
-    const studentBoxWidth = font.widthOfTextAtSize(
-      studentName,
-      studentFontSize
-    );
-    const studentBoxHeight = font.heightAtSize(studentFontSize);
+      let studentFontSize = DEFAULT_FONT_SIZE + 1;
+      let studentBoxWidth: number;
+      do {
+        studentFontSize -= 1;
+        studentBoxWidth = font.widthOfTextAtSize(studentName, studentFontSize);
+      } while (studentBoxWidth > TEXT_MAX_WIDTH);
 
-    firstPage.drawText(studentName, {
-      y: 265 - studentBoxHeight,
-      size: studentFontSize,
-      font,
-      x: width / 2 - studentBoxWidth / 2,
-      color,
-    });
-
-    const projectTitleFontSize = 18;
-    const projectTitle = selectedProject.title;
-
-    const projectTitleBoxHeight = font.heightAtSize(projectTitleFontSize);
-
-    // Precisa estar dentro de um loop que calcula os paragrafos como no wrapText. Para cada paragrafo, pega o firstPage.drawText colocando aquele parágrafo alterando o parametro y para -projectTitleBoxHeight, e x para (width/2 - currentParagraphWidth / 2}), assim centralizando a linha
-    const paragraphs = splitParagraphs(
-      projectTitle,
-      520,
-      font,
-      projectTitleFontSize
-    );
-    // mudar a centralização de altura, baseada no numero de linhas. caso exceda o numero de 3 linhas, recalcular o fontSize para que caiba
-    paragraphs.forEach((paragraph, index) => {
-      // console.log(paragraph);
-      const paragraphBoxWidth = font.widthOfTextAtSize(
-        paragraph,
-        projectTitleFontSize
-      );
-      // console.log(paragraphBoxWidth);
-
-      firstPage.drawText(paragraph, {
-        y: 195 - index * projectTitleBoxHeight,
-        size: projectTitleFontSize,
+      const studentBoxHeight = font.heightAtSize(studentFontSize);
+      pdfPage.drawText(studentName, {
+        y: 250 - studentBoxHeight / 2,
+        size: studentFontSize,
         font,
-        x: width / 2 - paragraphBoxWidth / 2,
-        color,
+        x: pdfWidth / 2 - studentBoxWidth / 2,
+        color: TEXT_COLOR,
       });
-    });
 
-    const pdfBytes = await pdfDoc.save();
-    const blob = new Blob([pdfBytes], { type: "application/pdf" });
-    const url = URL.createObjectURL(blob);
-    window.open(url);
+      const projectTitle = selectedProject.title;
+      let titleFontSize = DEFAULT_FONT_SIZE + 1;
+      let lines: string[];
+      let titleLineHeight: number;
+
+      do {
+        titleFontSize -= 1;
+        titleLineHeight = font.heightAtSize(titleFontSize);
+        lines = wrapText(
+          projectTitle,
+          font,
+          titleFontSize,
+          TEXT_MAX_WIDTH,
+          TITLE_MAX_HEIGHT
+        );
+      } while (lines.length * titleLineHeight > TITLE_MAX_HEIGHT);
+
+      const wrapedTitleFinalHeight = lines.length * titleLineHeight;
+      lines.forEach((line, index) => {
+        const titleLineWidth = font.widthOfTextAtSize(line, titleFontSize);
+
+        pdfPage.drawText(line, {
+          y:
+            200 -
+            (TITLE_MAX_HEIGHT - wrapedTitleFinalHeight) / 2 -
+            index * titleLineHeight,
+          size: titleFontSize,
+          font,
+          x: pdfWidth / 2 - titleLineWidth / 2,
+          color: TEXT_COLOR,
+        });
+      });
+
+      const pdfBytes = await pdf.save();
+      download(
+        pdfBytes,
+        `${[projectTitle, studentName].join(" - ")}.pdf`,
+        "application/pdf"
+      );
+    });
   };
 
   return (
     <button
       className="bg-primary py-2 text-white font-bold mt-4"
-      onClick={downloadCertificate}
+      onClick={downloadCertificates}
     >
-      BAIXAR CERTIFICADO
+      BAIXAR CERTIFICADO{selectedProject.authors.length > 1 && "(S)"}
     </button>
   );
 };
