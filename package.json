@@ -1,6 +1,6 @@
 {
-  "homepage": "leoprietsch.github.io/certificate-generator",
-  "name": "certificate-generator",
+  "homepage": "https://abric-ong.github.io/gerador-certificado-premio-abric",
+  "name": "gerador-certificado-premio-abric",
   "private": true,
   "version": "1.0.0",
   "type": "module",
