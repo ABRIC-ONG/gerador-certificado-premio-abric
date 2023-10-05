@@ -1,4 +1,2 @@
-# ABRIC's Certificate Generator
-This is an application for generating certificate batches to awarded participants of science fairs in Brazil.
-
-If you want to know more about us: https://abric.ong.br
+# Gerador de Certificados - Prêmio ABRIC de Incentivo à Ciência
+Saiba mais sobre a ABRIC em https://abric.ong.br
